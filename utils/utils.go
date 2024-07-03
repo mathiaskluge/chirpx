@@ -21,5 +21,8 @@ func RespondWithJSON(w http.ResponseWriter, status int, v any) error {
 }
 
 func RespondWithError(w http.ResponseWriter, status int, err error) {
-	RespondWithJSON(w, status, map[string]string{"error": err.Error()})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	_ = json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 }

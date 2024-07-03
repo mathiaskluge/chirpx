@@ -46,16 +46,16 @@ func (s *Store) CreateChirp(chirp types.Chirp) error {
 func (s *Store) GetChirpByID(id int) (*types.Chirp, error) {
 	dat, err := s.db.LoadDB()
 	if err != nil {
-		return &types.Chirp{}, fmt.Errorf("GetChirpbyID: Failed -> %w", err)
+		return &types.Chirp{}, fmt.Errorf("GetChirpByID: Failed -> %w", err)
 	}
 
 	if dat.Chirps == nil {
-		return &types.Chirp{}, errors.New("GetUChirpbyID: No chirps in database")
+		return &types.Chirp{}, errors.New("GetUChirpByID: No chirps in database")
 	}
 
 	chirp, ok := dat.Chirps[id]
 	if !ok {
-		return &types.Chirp{}, fmt.Errorf("GetChirpbyID: Chirp with ID: %v does not exist", id)
+		return &types.Chirp{}, fmt.Errorf("GetChirpByID: Chirp with ID: %v does not exist", id)
 	}
 	return &chirp, nil
 }
