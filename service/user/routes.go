@@ -16,4 +16,6 @@ func NewHandler(store types.UserStore) *Handler {
 
 func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /users", h.handlerCreateUser)
+	router.HandleFunc("POST /login", h.handlerLoginUser)
+	router.HandleFunc("PUT /users", h.handlerUpdateUser)
 }

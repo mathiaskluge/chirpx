@@ -66,6 +66,10 @@ func TestUserServiceHandler(t *testing.T) {
 type mockUserStore struct {
 }
 
+func (m *mockUserStore) UpdateUser(userID int, NewEmail, NewPwHash string) error {
+	return nil
+}
+
 func (m *mockUserStore) CreateUser(user types.User) error {
 	return nil
 }

@@ -20,6 +20,34 @@ func NewStore(db *db.DB) *Store {
 	}
 }
 
+func (s *Store) UpdateUser(userID int, NewEmail, NewPwHash string) error {
+
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return fmt.Errorf("UpdateUser: Failed -> %w", err)
+	}
+
+	if dat.Users == nil {
+		return errors.New("UpdateUser: no users in db")
+	}
+
+	curUser, ok := dat.Users[userID]
+	if !ok {
+		return errors.New("UpdateUser: User does not exist")
+	}
+
+	curUser.Email = NewEmail
+	curUser.PwHash = NewPwHash
+	dat.Users[userID] = curUser
+
+	err = s.db.WriteDB(dat)
+	if err != nil {
+		return fmt.Errorf("CreateUser: Failed -> %w", err)
+	}
+
+	return nil
+}
+
 // Creates a new User and writes changes to disk
 func (s *Store) CreateUser(user types.User) error {
 	dat, err := s.db.LoadDB()
