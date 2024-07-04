@@ -82,6 +82,7 @@ func (s *Store) GetUserByID(id int) (*types.User, error) {
 }
 
 // Generates a new user ID
+// Uses store.GetUsers() to determine next ID
 func (s *Store) GenerateUserID() (int, error) {
 	users, err := s.GetUsers()
 	if err != nil {

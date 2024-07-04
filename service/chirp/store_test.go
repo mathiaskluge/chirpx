@@ -30,7 +30,7 @@ func TestChirpStore(t *testing.T) {
 		},
 	}
 
-	t.Run("fails if chirp is not created of empty DB", func(t *testing.T) {
+	t.Run("Create chirp correctly in empty DB", func(t *testing.T) {
 		chirpID, err := testStore.GenerateChirpID()
 		if err != nil {
 			t.Fatal(err)
@@ -57,7 +57,7 @@ func TestChirpStore(t *testing.T) {
 
 	})
 
-	t.Run("fails if chirp is not created off existing DB correctly", func(t *testing.T) {
+	t.Run("Create chirp correctly in populated DB", func(t *testing.T) {
 		err = testDB.WriteDB(testData)
 		if err != nil {
 			t.Fatal(err)
