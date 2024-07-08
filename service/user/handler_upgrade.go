@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/mathiaskluge/chirpx/types"
@@ -17,8 +16,7 @@ func (h *Handler) handlerUpgradeUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if payload.Event != "user.upgraded" {
-		err := fmt.Errorf("invalid event type: %s", payload.Event)
-		utils.RespondWithError(w, http.StatusNoContent, err)
+		utils.RespondWithJSON(w, http.StatusNoContent, nil)
 		return
 	}
 
