@@ -21,6 +21,49 @@ func NewStore(db *db.DB) *Store {
 	}
 }
 
+// Update session in db
+func (s *Store) UpdateSession(token string, session types.Session) error {
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return fmt.Errorf("UpdateSession: Failed -> %w", err)
+	}
+
+	if dat.Sessions == nil {
+		return errors.New("UpdateSession: No sessions in database")
+	}
+
+	if _, ok := dat.Sessions[token]; !ok {
+		return errors.New("UpdateSession: Session does not exist")
+	}
+
+	dat.Sessions[token] = session
+
+	err = s.db.WriteDB(dat)
+	if err != nil {
+		return fmt.Errorf("CreateUser: Failed -> %w", err)
+	}
+
+	return nil
+}
+
+// Retrievs session from db
+func (s *Store) GetSession(token string) (types.Session, error) {
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return types.Session{}, fmt.Errorf("GetSession: Failed -> %w", err)
+	}
+
+	if dat.Sessions == nil {
+		return types.Session{}, errors.New("GetSession: No sessions in database")
+	}
+
+	session, ok := dat.Sessions[token]
+	if !ok {
+		return types.Session{}, fmt.Errorf("GetSessions: Session with token: %v does not exist", token)
+	}
+	return session, nil
+}
+
 // Creates a new session object in the db
 func (s *Store) CreateSession(token string, userID int, expiresInSeconds int) error {
 	dat, err := s.db.LoadDB()
@@ -43,6 +86,7 @@ func (s *Store) CreateSession(token string, userID int, expiresInSeconds int) er
 		ExpiresAt: time.Now().Add(expiration).Unix(),
 		UserID:    userID,
 		Token:     token,
+		Revoked:   false,
 	}
 
 	err = s.db.WriteDB(dat)

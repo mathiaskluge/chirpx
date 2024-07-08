@@ -2,13 +2,23 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
 
 var Validate = validator.New()
+
+func GetTokenFromRequest(r *http.Request) (string, error) {
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if tokenString == "" {
+		return "", errors.New("missing token in header")
+	}
+	return tokenString, nil
+}
 
 func ParseJSON(r *http.Request, payload interface{}) error {
 	if r.Body == nil {

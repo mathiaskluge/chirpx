@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mathiaskluge/chirpx/config"
@@ -16,9 +15,9 @@ import (
 
 func (h *Handler) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 	// Get token
-	tokenString := strings.TrimPrefix(req.Header.Get("Authorization"), "Bearer ")
-	if tokenString == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, errors.New("missing token in header"))
+	tokenString, err := utils.GetTokenFromRequest(req)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -79,59 +78,6 @@ func (h *Handler) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, types.CreateUserResponse{
-		ID:    userID,
-		Email: payload.Email,
-	})
-}
-
-func (h *Handler) handlerCreateUser(w http.ResponseWriter, req *http.Request) {
-	// Parse payload
-	var payload types.CreateUserPayload
-	if err := utils.ParseJSON(req, &payload); err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err)
-		return
-	}
-
-	// Validate payload
-	if err := utils.Validate.Struct(payload); err != nil {
-		error := err.(validator.ValidationErrors)
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", error))
-		return
-	}
-
-	// Check if user already exists
-	_, err := h.store.GetUserByEmail(payload.Email)
-	if err == nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
-		return
-	}
-
-	// Hash password
-	hashedPassword, err := auth.HashPassword(payload.Password)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	// Generate a new user ID
-	userID, err := h.store.GenerateUserID()
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	// Create the Users
-	err = h.store.CreateUser(types.User{
-		ID:     userID,
-		Email:  payload.Email,
-		PwHash: hashedPassword,
-	})
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.RespondWithJSON(w, http.StatusCreated, types.CreateUserResponse{
 		ID:    userID,
 		Email: payload.Email,
 	})

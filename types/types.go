@@ -24,6 +24,8 @@ type UserStore interface {
 	GenerateUserID() (int, error)
 	UpdateUser(userID int, NewEmail, NewPwHash string) error
 	CreateSession(token string, userID int, exppiresInSeconds int) error
+	GetSession(token string) (Session, error)
+	UpdateSession(token string, session Session) error
 }
 
 type User struct {
@@ -58,4 +60,5 @@ type Session struct {
 	ExpiresAt int64  `json:"expires_at"`
 	UserID    int    `json:"user_id"`
 	Token     string `json:"token"`
+	Revoked   bool   `json:"is_revoked"`
 }

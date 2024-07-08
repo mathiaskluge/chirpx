@@ -3,6 +3,10 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
+	"time"
+
+	"github.com/mathiaskluge/chirpx/types"
 )
 
 // Creates a 32-byte (256-bit) long unique session IDs using rand.Read()
@@ -21,4 +25,18 @@ func GenerateSessionID() (string, error) {
 	}
 
 	return hex.EncodeToString(id), nil
+}
+
+func ValidateSession(s types.Session) error {
+	// tokes is revoked
+	if s.Revoked == true {
+		return fmt.Errorf("Token %v has been revoked", s.Token)
+	}
+
+	// toke is expired
+	if s.ExpiresAt < time.Now().Unix() {
+		return fmt.Errorf("Token %v is expired", s.Token)
+	}
+
+	return nil
 }
