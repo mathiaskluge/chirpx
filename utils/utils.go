@@ -12,6 +12,14 @@ import (
 
 var Validate = validator.New()
 
+func GetAPIKeyFromRequest(r *http.Request) (string, error) {
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "ApiKey ")
+	if tokenString == "" {
+		return "", errors.New("missing token in header")
+	}
+	return tokenString, nil
+}
+
 func GetTokenFromRequest(r *http.Request) (string, error) {
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	if tokenString == "" {

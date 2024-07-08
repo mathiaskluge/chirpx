@@ -13,6 +13,7 @@ type Config struct {
 	DBPath                 string
 	JWTSecret              string
 	JWTExpirationInSeconds int
+	PolkaSecret            string
 }
 
 var Env = initConfig()
@@ -28,6 +29,7 @@ func initConfig() Config {
 		DBPath:                 "db/db.json",
 		JWTSecret:              getEnv("JWT_SECRET", "no secret..."),
 		JWTExpirationInSeconds: getEnvAsInt("JWT_EXP", 3600*24), // 24h default
+		PolkaSecret:            getEnv("POLKA_API_KEY", "no secret... "),
 	}
 }
 
