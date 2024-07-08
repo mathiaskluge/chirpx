@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/mathiaskluge/chirpx/db"
 	"github.com/mathiaskluge/chirpx/types"
@@ -18,6 +19,38 @@ func NewStore(db *db.DB) *Store {
 	return &Store{
 		db: db,
 	}
+}
+
+// Creates a new session object in the db
+func (s *Store) CreateSession(token string, userID int, expiresInSeconds int) error {
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return fmt.Errorf("CreateSession: Failed -> %w", err)
+	}
+
+	if dat.Sessions == nil {
+		dat.Sessions = map[string]types.Session{}
+	} else {
+		_, ok := dat.Sessions[token]
+		if ok {
+			return fmt.Errorf("CreateSession: Session with token: %v already exists", token)
+		}
+	}
+
+	expiration := time.Second * time.Duration(expiresInSeconds)
+
+	dat.Sessions[token] = types.Session{
+		ExpiresAt: time.Now().Add(expiration).Unix(),
+		UserID:    userID,
+		Token:     token,
+	}
+
+	err = s.db.WriteDB(dat)
+	if err != nil {
+		return fmt.Errorf("CreateUser: Failed -> %w", err)
+	}
+
+	return nil
 }
 
 func (s *Store) UpdateUser(userID int, NewEmail, NewPwHash string) error {

@@ -15,8 +15,9 @@ type DB struct {
 }
 
 type DBStructure struct {
-	Chirps map[int]types.Chirp `json:"chirps"`
-	Users  map[int]types.User  `json:"users"`
+	Chirps   map[int]types.Chirp      `json:"chirps"`
+	Users    map[int]types.User       `json:"users"`
+	Sessions map[string]types.Session `json:"sessions"`
 }
 
 // Reads the database file (db.path) into memory

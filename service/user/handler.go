@@ -84,48 +84,6 @@ func (h *Handler) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (h *Handler) handlerLoginUser(w http.ResponseWriter, req *http.Request) {
-	// Parse payload
-	var payload types.LoginUserPayload
-	if err := utils.ParseJSON(req, &payload); err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err)
-		return
-	}
-
-	// Validate payload
-	if err := utils.Validate.Struct(payload); err != nil {
-		error := err.(validator.ValidationErrors)
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", error))
-		return
-	}
-
-	//Check if user exists and retreive its Password Hash
-	user, err := h.store.GetUserByEmail(payload.Email)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("user not found, invalid email or password"))
-		return
-	}
-
-	//Compare PW hash to payload
-	if !auth.ComparePasswords(user.PwHash, []byte(payload.Password)) {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("user not found, invalid email or password"))
-		return
-	}
-
-	//Generate Token
-	token, err := auth.CreateJWT(config.Env.JWTSecret, user.ID, payload.ExpiresInSeconds)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, err)
-	}
-
-	//Respond with token
-	utils.RespondWithJSON(w, http.StatusOK, types.LoginUserResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Token: token,
-	})
-}
-
 func (h *Handler) handlerCreateUser(w http.ResponseWriter, req *http.Request) {
 	// Parse payload
 	var payload types.CreateUserPayload

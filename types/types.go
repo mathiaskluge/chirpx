@@ -23,6 +23,7 @@ type UserStore interface {
 	GetUserByID(id int) (*User, error)
 	GenerateUserID() (int, error)
 	UpdateUser(userID int, NewEmail, NewPwHash string) error
+	CreateSession(token string, userID int, exppiresInSeconds int) error
 }
 
 type User struct {
@@ -42,13 +43,19 @@ type CreateUserResponse struct {
 }
 
 type LoginUserPayload struct {
-	Email            string `json:"email" validate:"required,email"`
-	Password         string `json:"password" validate:"required"`
-	ExpiresInSeconds int    `json:"expires_in_seconds" validate:"number"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type LoginUserResponse struct {
-	ID    int    `json:"id"`
-	Email string `json:"email"`
-	Token string `json:"token"`
+	ID      int    `json:"id"`
+	Email   string `json:"email"`
+	Token   string `json:"token"`
+	Session string `json:"refresh_token"`
+}
+
+type Session struct {
+	ExpiresAt int64  `json:"expires_at"`
+	UserID    int    `json:"user_id"`
+	Token     string `json:"token"`
 }
