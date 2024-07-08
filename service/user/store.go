@@ -97,8 +97,33 @@ func (s *Store) CreateSession(token string, userID int, expiresInSeconds int) er
 	return nil
 }
 
-func (s *Store) UpdateUser(userID int, NewEmail, NewPwHash string) error {
+func (s *Store) UpgradeUser(userID int) error {
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return fmt.Errorf("UpgradeUser: Failed -> %w", err)
+	}
 
+	if dat.Users == nil {
+		return errors.New("UpgradeUser: no users in db")
+	}
+
+	curUser, ok := dat.Users[userID]
+	if !ok {
+		return errors.New("UpgradeUser: User does not exist")
+	}
+
+	curUser.IsUpgraded = true
+	dat.Users[userID] = curUser
+
+	err = s.db.WriteDB(dat)
+	if err != nil {
+		return fmt.Errorf("CreateUser: Failed -> %w", err)
+	}
+
+	return nil
+}
+
+func (s *Store) UpdateUser(userID int, NewEmail, NewPwHash string) error {
 	dat, err := s.db.LoadDB()
 	if err != nil {
 		return fmt.Errorf("UpdateUser: Failed -> %w", err)
@@ -151,10 +176,10 @@ func (s *Store) CreateUser(user types.User) error {
 }
 
 // Returns pointer to a user if it exists, error otherwise
-func (s *Store) GetUserByEmail(email string) (*types.User, error) {
+func (s *Store) GetUserByEmail(email string) (types.User, error) {
 	dat, err := s.db.LoadDB()
 	if err != nil {
-		return &types.User{}, fmt.Errorf("GetUserbyEmail: Failed -> %w", err)
+		return types.User{}, fmt.Errorf("GetUserbyEmail: Failed -> %w", err)
 	}
 
 	userMap := make(map[string]types.User)
@@ -163,27 +188,27 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 	}
 	user, ok := userMap[email]
 	if !ok {
-		return &types.User{}, fmt.Errorf("GetUserbyEmail: User with Email: %s does not exist", email)
+		return types.User{}, fmt.Errorf("GetUserbyEmail: User with Email: %s does not exist", email)
 	}
-	return &user, nil
+	return user, nil
 }
 
 // Returns pointer to a user if it exists, error otherwise
-func (s *Store) GetUserByID(id int) (*types.User, error) {
+func (s *Store) GetUserByID(id int) (types.User, error) {
 	dat, err := s.db.LoadDB()
 	if err != nil {
-		return &types.User{}, fmt.Errorf("GetUserbyID: Failed -> %w", err)
+		return types.User{}, fmt.Errorf("GetUserbyID: Failed -> %w", err)
 	}
 
 	if dat.Users == nil {
-		return &types.User{}, errors.New("GetUserbyID: No users in database")
+		return types.User{}, errors.New("GetUserbyID: No users in database")
 	}
 
 	user, ok := dat.Users[id]
 	if !ok {
-		return &types.User{}, fmt.Errorf("GetUserbyID: User with ID: %v does not exist", id)
+		return types.User{}, fmt.Errorf("GetUserbyID: User with ID: %v does not exist", id)
 	}
-	return &user, nil
+	return user, nil
 }
 
 // Generates a new user ID

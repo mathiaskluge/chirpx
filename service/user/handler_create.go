@@ -48,9 +48,10 @@ func (h *Handler) handlerCreateUser(w http.ResponseWriter, req *http.Request) {
 
 	// Create the Users
 	err = h.store.CreateUser(types.User{
-		ID:     userID,
-		Email:  payload.Email,
-		PwHash: hashedPassword,
+		ID:         userID,
+		Email:      payload.Email,
+		PwHash:     hashedPassword,
+		IsUpgraded: false,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err)
@@ -58,7 +59,8 @@ func (h *Handler) handlerCreateUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, types.CreateUserResponse{
-		ID:    userID,
-		Email: payload.Email,
+		ID:         userID,
+		Email:      payload.Email,
+		IsUpgraded: false,
 	})
 }

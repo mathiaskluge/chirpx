@@ -27,19 +27,21 @@ type CreateChirpResponse struct {
 type UserStore interface {
 	CreateUser(user User) error
 	GetUsers() ([]User, error)
-	GetUserByEmail(email string) (*User, error)
-	GetUserByID(id int) (*User, error)
+	GetUserByEmail(email string) (User, error)
+	GetUserByID(id int) (User, error)
 	GenerateUserID() (int, error)
 	UpdateUser(userID int, NewEmail, NewPwHash string) error
 	CreateSession(token string, userID int, exppiresInSeconds int) error
 	GetSession(token string) (Session, error)
 	UpdateSession(token string, session Session) error
+	UpgradeUser(userID int) error
 }
 
 type User struct {
-	ID     int    `json:"id"`
-	Email  string `json:"email"`
-	PwHash string `json:"passwordHash"`
+	ID         int    `json:"id"`
+	Email      string `json:"email"`
+	PwHash     string `json:"passwordHash"`
+	IsUpgraded bool   `json:"is_chirpy_red"`
 }
 
 type CreateUserPayload struct {
@@ -48,8 +50,9 @@ type CreateUserPayload struct {
 }
 
 type CreateUserResponse struct {
-	ID    int    `json:"id"`
-	Email string `json:"email"`
+	ID         int    `json:"id"`
+	Email      string `json:"email"`
+	IsUpgraded bool   `json:"is_chirpy_red"`
 }
 
 type LoginUserPayload struct {
@@ -58,10 +61,11 @@ type LoginUserPayload struct {
 }
 
 type LoginUserResponse struct {
-	ID      int    `json:"id"`
-	Email   string `json:"email"`
-	Token   string `json:"token"`
-	Session string `json:"refresh_token"`
+	ID         int    `json:"id"`
+	Email      string `json:"email"`
+	Token      string `json:"token"`
+	Session    string `json:"refresh_token"`
+	IsUpgraded bool   `json:"is_chirpy_red"`
 }
 
 type Session struct {
@@ -69,4 +73,13 @@ type Session struct {
 	UserID    int    `json:"user_id"`
 	Token     string `json:"token"`
 	Revoked   bool   `json:"is_revoked"`
+}
+
+type UpgradeUserPayload struct {
+	Event string `json:"event"`
+	Data  UserID `json:"data"`
+}
+
+type UserID struct {
+	UserID int `json:"user_id"`
 }

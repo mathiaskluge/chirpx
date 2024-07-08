@@ -55,7 +55,7 @@ func (h *Handler) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Check existance
-	_, err = h.store.GetUserByID(userID)
+	user, err := h.store.GetUserByID(userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Errorf("user not found, invalid ID"))
 		return
@@ -78,7 +78,8 @@ func (h *Handler) handlerUpdateUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, types.CreateUserResponse{
-		ID:    userID,
-		Email: payload.Email,
+		ID:         userID,
+		Email:      payload.Email,
+		IsUpgraded: user.IsUpgraded,
 	})
 }

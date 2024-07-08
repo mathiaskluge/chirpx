@@ -99,3 +99,7 @@ func (m *mockUserStore) GetSession(token string) (types.Session, error) {
 func (m *mockUserStore) UpdateSession(token string, session types.Session) error {
 	return nil
 }
+
+func (m *mockUserStore) UpgradeUser(userID int) error {
+	return nil
+}

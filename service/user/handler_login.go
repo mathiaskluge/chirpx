@@ -59,9 +59,10 @@ func (h *Handler) handlerLoginUser(w http.ResponseWriter, req *http.Request) {
 
 	//Respond with token
 	utils.RespondWithJSON(w, http.StatusOK, types.LoginUserResponse{
-		ID:      user.ID,
-		Email:   user.Email,
-		Token:   token,
-		Session: sToken,
+		ID:         user.ID,
+		Email:      user.Email,
+		Token:      token,
+		Session:    sToken,
+		IsUpgraded: user.IsUpgraded,
 	})
 }

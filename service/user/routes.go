@@ -20,4 +20,5 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("PUT /users", h.handlerUpdateUser)
 	router.HandleFunc("POST /refresh", h.handlerRefresh)
 	router.HandleFunc("POST /revoke", h.handlerRevoke)
+	router.HandleFunc("POST /polka/webhooks", h.handlerUpgradeUser)
 }
