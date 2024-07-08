@@ -89,3 +89,13 @@ func (m *mockUserStore) GetUserByID(id int) (*types.User, error) {
 func (m *mockUserStore) GenerateUserID() (int, error) {
 	return 0, nil
 }
+
+func (m *mockUserStore) CreateSession(token string, userID int, exppiresInSeconds int) error {
+	return nil
+}
+func (m *mockUserStore) GetSession(token string) (types.Session, error) {
+	return types.Session{}, nil
+}
+func (m *mockUserStore) UpdateSession(token string, session types.Session) error {
+	return nil
+}

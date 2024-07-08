@@ -19,6 +19,31 @@ func NewStore(db *db.DB) *Store {
 	}
 }
 
+func (s *Store) DeleteChirp(chirpID int) error {
+	dat, err := s.db.LoadDB()
+	if err != nil {
+		return fmt.Errorf("DeleteChirp: Failed -> %w", err)
+	}
+
+	if dat.Chirps == nil {
+		return errors.New("DeleteChirp: No chirps in database")
+	}
+
+	_, ok := dat.Chirps[chirpID]
+	if !ok {
+		return fmt.Errorf("DeleteChirp: Chirp with ID: %v does not exist", chirpID)
+	}
+
+	delete(dat.Chirps, chirpID)
+
+	err = s.db.WriteDB(dat)
+	if err != nil {
+		return fmt.Errorf("DeleteChirp: Failed -> %w", err)
+	}
+
+	return nil
+}
+
 func (s *Store) CreateChirp(chirp types.Chirp) error {
 	dat, err := s.db.LoadDB()
 	if err != nil {
@@ -43,21 +68,21 @@ func (s *Store) CreateChirp(chirp types.Chirp) error {
 	return nil
 }
 
-func (s *Store) GetChirpByID(id int) (*types.Chirp, error) {
+func (s *Store) GetChirpByID(id int) (types.Chirp, error) {
 	dat, err := s.db.LoadDB()
 	if err != nil {
-		return &types.Chirp{}, fmt.Errorf("GetChirpByID: Failed -> %w", err)
+		return types.Chirp{}, fmt.Errorf("GetChirpByID: Failed -> %w", err)
 	}
 
 	if dat.Chirps == nil {
-		return &types.Chirp{}, errors.New("GetUChirpByID: No chirps in database")
+		return types.Chirp{}, errors.New("GetUChirpByID: No chirps in database")
 	}
 
 	chirp, ok := dat.Chirps[id]
 	if !ok {
-		return &types.Chirp{}, fmt.Errorf("GetChirpByID: Chirp with ID: %v does not exist", id)
+		return types.Chirp{}, fmt.Errorf("GetChirpByID: Chirp with ID: %v does not exist", id)
 	}
-	return &chirp, nil
+	return chirp, nil
 }
 
 // Generates a new user ID

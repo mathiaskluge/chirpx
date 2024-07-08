@@ -1,19 +1,27 @@
 package types
 
 type Chirp struct {
-	ID   int    `json:"id"`
-	Body string `json:"body"`
+	ID       int    `json:"id"`
+	Body     string `json:"body"`
+	AuthorID int    `json:"author_id"`
 }
 
 type ChirpStore interface {
 	CreateChirp(chirp Chirp) error
 	GetChirps() ([]Chirp, error)
-	GetChirpByID(id int) (*Chirp, error)
+	GetChirpByID(id int) (Chirp, error)
 	GenerateChirpID() (int, error)
+	DeleteChirp(chirpID int) error
 }
 
 type CreateChirpPayload struct {
 	Body string `json:"body"`
+}
+
+type CreateChirpResponse struct {
+	ID       int    `json:"id"`
+	Body     string `json:"body"`
+	AuthorID int    `json:"author_id"`
 }
 
 type UserStore interface {

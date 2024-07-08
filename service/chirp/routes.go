@@ -18,4 +18,5 @@ func (h *Handler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /chirps", h.handlerGetChirps)
 	router.HandleFunc("GET /chirps/{chirpID}", h.handlerGetChirpByID)
 	router.HandleFunc("POST /chirps", h.handlerCreateChirp)
+	router.HandleFunc("DELETE /chirps/{chirpID}", h.handlerDeleteChirp)
 }
