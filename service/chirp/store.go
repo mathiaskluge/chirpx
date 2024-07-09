@@ -85,8 +85,8 @@ func (s *Store) GetChirpByID(id int) (types.Chirp, error) {
 	return chirp, nil
 }
 
-func (s *Store) GetChirpsByAuthor(authorID int) ([]types.Chirp, error) {
-	allChirps, err := s.GetChirps()
+func (s *Store) GetChirpsByAuthor(authorID int, sortOrder string) ([]types.Chirp, error) {
+	allChirps, err := s.GetChirps(sortOrder)
 	if err != nil {
 		return []types.Chirp{}, fmt.Errorf("GetChirpsByID: Failed -> %w", err)
 	}
@@ -104,7 +104,7 @@ func (s *Store) GetChirpsByAuthor(authorID int) ([]types.Chirp, error) {
 // Generates a new user ID
 // Uses store.GetUsers() to determine next ID
 func (s *Store) GenerateChirpID() (int, error) {
-	chirps, err := s.GetChirps()
+	chirps, err := s.GetChirps("asc")
 	if err != nil {
 		return 0, fmt.Errorf("GenerateChirpID: Failed -> %w", err)
 	}
@@ -115,7 +115,11 @@ func (s *Store) GenerateChirpID() (int, error) {
 	return len(chirps) + 1, nil
 }
 
-func (s *Store) GetChirps() ([]types.Chirp, error) {
+// GetChirps retrieves chirps from the store and sorts them based on sortOrder.
+// If sortOrder is "asc", chirps are sorted in ascending order of ID.
+// If sortOrder is "desc", chirps are sorted in descending order of ID.
+// If sortOrder is empty or any other value, chirps are sorted in ascending order by default.
+func (s *Store) GetChirps(sortOrder string) ([]types.Chirp, error) {
 	dat, err := s.db.LoadDB()
 	if err != nil {
 		return []types.Chirp{}, fmt.Errorf("GetChirp: Failed -> %w", err)
@@ -130,9 +134,18 @@ func (s *Store) GetChirps() ([]types.Chirp, error) {
 		chirps = append(chirps, u)
 	}
 
-	sort.Slice(chirps, func(i, j int) bool {
-		return chirps[i].ID < chirps[j].ID
-	})
+	switch sortOrder {
+	case "desc":
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].ID > chirps[j].ID
+		})
+	case "asc", "":
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].ID < chirps[j].ID
+		})
+	default:
+		return []types.Chirp{}, fmt.Errorf("getChirps: unsupported sortOrder: %s", sortOrder)
+	}
 
 	return chirps, nil
 }

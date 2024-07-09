@@ -8,11 +8,11 @@ type Chirp struct {
 
 type ChirpStore interface {
 	CreateChirp(chirp Chirp) error
-	GetChirps() ([]Chirp, error)
+	GetChirps(sortOrder string) ([]Chirp, error)
 	GetChirpByID(id int) (Chirp, error)
 	GenerateChirpID() (int, error)
 	DeleteChirp(chirpID int) error
-	GetChirpsByAuthor(authorID int) ([]Chirp, error)
+	GetChirpsByAuthor(authorID int, sortOrder string) ([]Chirp, error)
 }
 
 type CreateChirpPayload struct {

@@ -10,16 +10,17 @@ import (
 
 func (h *Handler) handlerGetChirps(w http.ResponseWriter, req *http.Request) {
 	// extract query parameters
-	s := req.URL.Query().Get("author_id")
+	stringAuthorID := req.URL.Query().Get("author_id")
+	sortOrder := req.URL.Query().Get("sort")
 
-	if s != "" {
-		authorID, err := strconv.Atoi(s)
+	if stringAuthorID != "" {
+		authorID, err := strconv.Atoi(stringAuthorID)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusBadRequest, errors.New("Invalid authorID."))
 			return
 		}
 
-		chirps, err := h.store.GetChirpsByAuthor(authorID)
+		chirps, err := h.store.GetChirpsByAuthor(authorID, sortOrder)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, err)
 			return
@@ -30,11 +31,12 @@ func (h *Handler) handlerGetChirps(w http.ResponseWriter, req *http.Request) {
 
 	}
 
-	chirps, err := h.store.GetChirps()
+	chirps, err := h.store.GetChirps(sortOrder)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
+
 	utils.RespondWithJSON(w, http.StatusOK, chirps)
 }
 
