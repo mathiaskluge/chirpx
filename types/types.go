@@ -12,6 +12,7 @@ type ChirpStore interface {
 	GetChirpByID(id int) (Chirp, error)
 	GenerateChirpID() (int, error)
 	DeleteChirp(chirpID int) error
+	GetChirpsByAuthor(authorID int) ([]Chirp, error)
 }
 
 type CreateChirpPayload struct {

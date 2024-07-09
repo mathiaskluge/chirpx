@@ -78,12 +78,12 @@ func (m *mockUserStore) GetUsers() ([]types.User, error) {
 	return nil, nil
 }
 
-func (m *mockUserStore) GetUserByEmail(email string) (*types.User, error) {
-	return nil, fmt.Errorf("User not found")
+func (m *mockUserStore) GetUserByEmail(email string) (types.User, error) {
+	return types.User{}, fmt.Errorf("User not found")
 }
 
-func (m *mockUserStore) GetUserByID(id int) (*types.User, error) {
-	return nil, nil
+func (m *mockUserStore) GetUserByID(id int) (types.User, error) {
+	return types.User{}, nil
 }
 
 func (m *mockUserStore) GenerateUserID() (int, error) {

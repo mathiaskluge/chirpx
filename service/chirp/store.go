@@ -85,6 +85,22 @@ func (s *Store) GetChirpByID(id int) (types.Chirp, error) {
 	return chirp, nil
 }
 
+func (s *Store) GetChirpsByAuthor(authorID int) ([]types.Chirp, error) {
+	allChirps, err := s.GetChirps()
+	if err != nil {
+		return []types.Chirp{}, fmt.Errorf("GetChirpsByID: Failed -> %w", err)
+	}
+
+	chirpsWithAuthorID := []types.Chirp{}
+	for _, chirp := range allChirps {
+		if chirp.AuthorID == authorID {
+			chirpsWithAuthorID = append(chirpsWithAuthorID, chirp)
+		}
+	}
+
+	return chirpsWithAuthorID, nil
+}
+
 // Generates a new user ID
 // Uses store.GetUsers() to determine next ID
 func (s *Store) GenerateChirpID() (int, error) {

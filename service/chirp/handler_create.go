@@ -43,16 +43,19 @@ func (h *Handler) handlerCreateChirp(w http.ResponseWriter, req *http.Request) {
 	var payload types.CreateChirpPayload
 	if err := utils.ParseJSON(req, &payload); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 	validatedBody, err := ValidateChirp(payload.Body)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Generate a chirp ID
 	chirpID, err := h.store.GenerateChirpID()
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	// Create the chirp in the database
@@ -63,6 +66,7 @@ func (h *Handler) handlerCreateChirp(w http.ResponseWriter, req *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, types.CreateChirpResponse{
