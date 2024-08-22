@@ -1,2 +1,2 @@
 # chirpx
-Go web server project from boot.dev
+Go web server exploring jwt and webhooks.
